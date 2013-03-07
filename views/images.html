@@ -1,0 +1,15 @@
+<h2>you made it</h2>
+
+<h2>Images (<%= images.length %>)</h2>
+<% for(i=0; i < images.length; i++) { %>
+    <li>
+        <b><%= images[i].caption %></b>
+        <br>
+        <small><a href="/deleteImage/<%= images[i]._id %>">delete</a></small> 
+        <br>
+        <a href="https://s3.amazonaws.com/<%= s3bucket %>/<%= images[i].filename %>">
+            <img src="https://s3.amazonaws.com/<%= s3bucket %>/<%= images[i].filename %>">
+        </a>
+    </li>
+<% } %>
+

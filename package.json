@@ -6,7 +6,8 @@
     "ejs" : "latest",
     "knox" : "0.5.4",
     "fs" : "latest",
-    "mongoose" : "latest"
+    "mongoose" : "latest",
+    "utils" : "latest"
   },
     "engines": {
     "node": "0.8.x",

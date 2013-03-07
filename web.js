@@ -1,7 +1,7 @@
 var ejs = require('ejs');
 var mongoose = require('mongoose');
-
 var express = require('express');
+var flash = require('connect-flash');
 var	app = express();
 	
 
@@ -11,7 +11,7 @@ var myBucket = 'my-trash-images';
 
 //Module dependencies.
 
-var db = require('./models/images.js')
+var trashModel = require('./models/images.js')
    , format = require('util').format
    , fs = require('fs');
 
@@ -23,6 +23,7 @@ var S3Client = knox.createClient({
     , secret: process.env.AWS_SECRET
     , bucket: myBucket
 });
+
 
 	
 /*********** SERVER CONFIGURATION *****************/
@@ -58,7 +59,13 @@ app.configure(function() {
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
     
     
-    /* app.db = mongoose.connect(process.env.MONGOLAB_URI); */
+    app.use(express.cookieParser('keyboard cat'));
+    app.use(express.session({ cookie: { maxAge: 60000 }}));
+	app.use(flash());
+    
+    
+    app.db = mongoose.connect(process.env.MONGOLAB_URI);
+
 
 });
 /*********** END SERVER CONFIGURATION *****************/	
@@ -67,17 +74,14 @@ app.get('/', function(request,response){
 
 	
 	response.send('<form method="post" action="/upload" enctype="multipart/form-data">' +
-        '<p>Caption: <input type="text" name="caption" /></p>' +
-        '<p>Image: <input type="file" name="image" /></p>' +
-        '<p><input type="submit" value="Upload" /></p>' +
-    '</form>');
+        			'<p>Caption: <input type="text" name="caption" /></p>' +
+        			'<p>Image: <input type="file" name="image" /></p>' +
+        			'<div class="progress progress-striped active">' +
+     		   			'<div class="bar" style="width: 40%;"></div>' + 
+        			'</div>' +
+        			'<p><input type="submit" value="Upload" /></p>' +
+        		'</form>');
 });
-
-app.get('/upload', function(request,response) {
-	
-	reponse.render('/upload');
-});
-
 
 app.post('/upload', function(request, response) {
         
@@ -103,7 +107,7 @@ app.post('/upload', function(request, response) {
                 if (200 == res.statusCode) {
 
                     // create new Image
-                    var newImage = new db.Images({
+                    var newImage = new trashModel({
                           caption : caption
                         , filename : filename                       
                     });
@@ -111,9 +115,9 @@ app.post('/upload', function(request, response) {
                         if (err) { 
                             response.send("uhoh, could not save image filename to database.");
                         }
-                        
+                        console.log('im here ');
                         request.flash('message','Image uploaded successfully');
-                        response.redirect('/');
+                        response.redirect('/images');
                         
                     })
  
@@ -131,6 +135,33 @@ app.post('/upload', function(request, response) {
 
             
 });
+
+app.get('/images', function(request,response) {
+
+	var filter = {};
+	var fields = 'caption filename'
+   //Get images for user
+   trashModel.find(filter, fields, function(err, images){
+   		if (err) {
+   			
+	   		console.error('oops');
+	   		console.error(err);
+   		} else {
+	   		console.log(images);
+	   		
+       var templateData = {
+           s3bucket : S3Client.bucket, // the name of your Bucket
+           images : images,
+           message : request.flash('message')[0] 
+       }
+
+
+       response.render('images.html', templateData);
+       }
+   })
+
+});
+
 
 var port = process.env.PORT || 3000;
 app.listen(port, function() {
