@@ -1,7 +1,8 @@
 var ejs = require('ejs');
+var mongoose = require('mongoose');
 
-var express = require('express'),
-	app = express();
+var express = require('express');
+var	app = express();
 	
 
 // CHANGE THIS TO YOUR BUCKET NAME
