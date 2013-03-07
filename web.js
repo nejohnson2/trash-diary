@@ -3,13 +3,14 @@ var ejs = require('ejs');
 var express = require('express'),
 	app = express();
 	
+/*
 
 // CHANGE THIS TO YOUR BUCKET NAME
 var myBucket = 'heroku_uploads';
 
-/**
-  * Module dependencies.
-  */  
+
+//Module dependencies.
+
 var db = require('../accessDB')
    , format = require('util').format
    , fs = require('fs');
@@ -22,6 +23,7 @@ var S3Client = knox.createClient({
     , secret: process.env.AWS_SECRET
     , bucket: myBucket
 });
+*/
 	
 /*********** SERVER CONFIGURATION *****************/
 app.configure(function() {
@@ -64,15 +66,11 @@ app.configure(function() {
 app.get('/', function(request,response){
 
 	
-	response.send('
-	
-	<h2>Upload a new photo</h2>
-    <form method="post" action="/upload" enctype="multipart/form-data">
-        <p>Caption: <input type="text" name="caption" /></p>
-        <p>Image: <input type="file" name="image" /></p>
-        <p><input type="submit" value="Upload" /></p>
-    </form>'
-    );
+	response.send('<form method="post" action="/upload" enctype="multipart/form-data">' +
+        '<p>Caption: <input type="text" name="caption" /></p>' +
+        '<p>Image: <input type="file" name="image" /></p>' +
+        '<p><input type="submit" value="Upload" /></p>' +
+    '</form>');
 });
 
 app.get('/upload', function(request,response) {
