@@ -1,7 +1,9 @@
 var ejs = require('ejs');
 var mongoose = require('mongoose');
 var express = require('express');
+
 var flash = require('connect-flash');
+var path = require('path');
 var	app = express();
 	
 
@@ -37,10 +39,15 @@ app.configure(function() {
         We will render the html templates as needed by passing in the necessary data.
     *********************************************************************************/
     app.set('port', process.env.PORT || 3000);
-    app.set('view engine','ejs');  // use the EJS node module
+/*     app.set('view engine','ejs');  // use the EJS node module */
     app.set('views',__dirname+ '/views'); // use /views as template directory
+/*
     app.set('view options',{layout:true}); // use /views/layout.html to manage your main header/footer wrapping template
     app.engine('html',require('ejs').renderFile); //use .html files in /views
+*/
+    app.set('view engine','html');  // use the EJS node module    
+    app.set('layout','layout');
+    app.engine('html', require('hogan-express'));
 
     /******************************************************************
         The /static folder will hold all css, js and image assets.
@@ -50,10 +57,8 @@ app.configure(function() {
         In your html template you will reference these assets
         as yourdomain.heroku.com/img/cats.gif or yourdomain.heroku.com/js/script.js
     ******************************************************************/
-    app.use(express.static(__dirname + '/static'));
-    //parse any http form post
-    app.use(express.bodyParser());
-    
+/*     app.use(express.static(__dirname + '/static'));    */ 
+        
     /**** Turn on some debugging tools ****/
     app.use(express.logger());
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
@@ -62,14 +67,41 @@ app.configure(function() {
     app.use(express.cookieParser('keyboard cat'));
     app.use(express.session({ cookie: { maxAge: 60000 }}));
 	app.use(flash());
+	
+	app.use(express.favicon());
+	// app.use(express.logger('dev'));
+	app.use(express.bodyParser());
+	app.use(express.methodOverride());
+	app.use(app.router);
+	app.use(express.static(path.join(__dirname, 'public')));
     
     
     app.db = mongoose.connect(process.env.MONGOLAB_URI);
+    console.log("connected to database");
 
 
 });
 /*********** END SERVER CONFIGURATION *****************/	
 
+app.configure('development', function(){
+  app.use(express.errorHandler());
+});
+
+var routes = require('./routes/index.js');
+
+
+app.get('/', routes.index);
+
+//new astronaut routes
+app.get('/upload',routes.uploadForm); //display form
+app.post('/upload',routes.uploadImage); //form POST submits here
+
+app.get('/:filename', routes.detail);
+
+/* app.get('/delete/:filename', routes.remove); */
+app.get('/delete/:filename', routes.remove);
+
+/*
 app.get('/', function(request,response){
 
 	
@@ -82,6 +114,8 @@ app.get('/', function(request,response){
         			'<p><input type="submit" value="Upload" /></p>' +
         		'</form>');
 });
+*/
+/*
 
 app.post('/upload', function(request, response) {
         
@@ -100,11 +134,13 @@ app.post('/upload', function(request, response) {
             var req = S3Client.put(filename, {
               'Content-Length': buf.length
             , 'Content-Type': type
+            , 'x-amz-acl': 'public-read'
             });
             
             // 3c) prepare 'response' callback from S3
             req.on('response', function(res){
                 if (200 == res.statusCode) {
+                console.log('saved to %s', req.url);
 
                     // create new Image
                     var newImage = new trashModel({
@@ -135,32 +171,9 @@ app.post('/upload', function(request, response) {
 
             
 });
-
-app.get('/images', function(request,response) {
-
-	var filter = {};
-	var fields = 'caption filename'
-   //Get images for user
-   trashModel.find(filter, fields, function(err, images){
-   		if (err) {
-   			
-	   		console.error('oops');
-	   		console.error(err);
-   		} else {
-	   		console.log(images);
-	   		
-       var templateData = {
-           s3bucket : S3Client.bucket, // the name of your Bucket
-           images : images,
-           message : request.flash('message')[0] 
-       }
+*/
 
 
-       response.render('images.html', templateData);
-       }
-   })
-
-});
 
 
 var port = process.env.PORT || 3000;
