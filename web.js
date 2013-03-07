@@ -3,15 +3,14 @@ var ejs = require('ejs');
 var express = require('express'),
 	app = express();
 	
-/*
 
 // CHANGE THIS TO YOUR BUCKET NAME
-var myBucket = 'heroku_uploads';
+var myBucket = 'my-trash-images';
 
 
 //Module dependencies.
 
-var db = require('../accessDB')
+var db = require('./models/images.js')
    , format = require('util').format
    , fs = require('fs');
 
@@ -23,7 +22,7 @@ var S3Client = knox.createClient({
     , secret: process.env.AWS_SECRET
     , bucket: myBucket
 });
-*/
+
 	
 /*********** SERVER CONFIGURATION *****************/
 app.configure(function() {
