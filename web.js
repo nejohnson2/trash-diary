@@ -113,7 +113,7 @@ app.post('/upload', function(request, response) {
                         }
                         
                         request.flash('message','Image uploaded successfully');
-                        response.redirect('/account');
+                        response.redirect('/');
                         
                     })
  
