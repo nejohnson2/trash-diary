@@ -9,7 +9,8 @@
     "mongoose" : "latest",
     "utils" : "latest",
     "hogan-express" : "0.3.3",
-    "path" : "latest"
+    "path" : "latest",
+    "connect-flash": "latest"
   },
     "engines": {
     "node": "0.8.x",

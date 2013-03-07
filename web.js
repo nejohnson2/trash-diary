@@ -1,24 +1,20 @@
 var ejs = require('ejs');
 var mongoose = require('mongoose');
 var express = require('express');
-
 var flash = require('connect-flash');
 var path = require('path');
 var	app = express();
-	
 
 // CHANGE THIS TO YOUR BUCKET NAME
 var myBucket = 'my-trash-images';
 
-
 //Module dependencies.
-
 var trashModel = require('./models/images.js')
    , format = require('util').format
    , fs = require('fs');
 
+//Amazon S3 Stuff 
 var knox = require('knox');
-	
 
 var S3Client = knox.createClient({
       key: process.env.AWS_KEY
@@ -26,8 +22,6 @@ var S3Client = knox.createClient({
     , bucket: myBucket
 });
 
-
-	
 /*********** SERVER CONFIGURATION *****************/
 app.configure(function() {
     
@@ -89,92 +83,18 @@ app.configure('development', function(){
 
 var routes = require('./routes/index.js');
 
-
+//view all images
 app.get('/', routes.index);
 
-//new astronaut routes
+//uplad image
 app.get('/upload',routes.uploadForm); //display form
 app.post('/upload',routes.uploadImage); //form POST submits here
 
+//view individual image details
 app.get('/:filename', routes.detail);
 
-/* app.get('/delete/:filename', routes.remove); */
+//delete individual file
 app.get('/delete/:filename', routes.remove);
-
-/*
-app.get('/', function(request,response){
-
-	
-	response.send('<form method="post" action="/upload" enctype="multipart/form-data">' +
-        			'<p>Caption: <input type="text" name="caption" /></p>' +
-        			'<p>Image: <input type="file" name="image" /></p>' +
-        			'<div class="progress progress-striped active">' +
-     		   			'<div class="bar" style="width: 40%;"></div>' + 
-        			'</div>' +
-        			'<p><input type="submit" value="Upload" /></p>' +
-        		'</form>');
-});
-*/
-/*
-
-app.post('/upload', function(request, response) {
-        
-        // 1) Get file information from submitted form
-        filename = request.files.image.filename; // actual filename of file
-        path = request.files.image.path; //will be put into a temp directory
-        type = request.files.image.type; // image/jpeg or actual mime type
-        
-        caption = request.body.caption;
-
-        
-        // 3a) We first need to open and read the file
-        fs.readFile(path, function(err, buf){
-
-            // 3b) prepare PUT to Amazon S3
-            var req = S3Client.put(filename, {
-              'Content-Length': buf.length
-            , 'Content-Type': type
-            , 'x-amz-acl': 'public-read'
-            });
-            
-            // 3c) prepare 'response' callback from S3
-            req.on('response', function(res){
-                if (200 == res.statusCode) {
-                console.log('saved to %s', req.url);
-
-                    // create new Image
-                    var newImage = new trashModel({
-                          caption : caption
-                        , filename : filename                       
-                    });
-                    newImage.save( function(err) {
-                        if (err) { 
-                            response.send("uhoh, could not save image filename to database.");
-                        }
-                        console.log('im here ');
-                        request.flash('message','Image uploaded successfully');
-                        response.redirect('/images');
-                        
-                    })
- 
-                    
-                } else {
-                    
-                    response.send("an error occurred. unable to upload file to S3.");
-                    
-                }
-            });
-            
-            // 3d) finally send the content of the file and end
-            req.end(buf);
-        });    
-
-            
-});
-*/
-
-
-
 
 var port = process.env.PORT || 3000;
 app.listen(port, function() {
