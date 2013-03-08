@@ -18,13 +18,39 @@
         <link rel="stylesheet" href="/css/bootstrap-responsive.min.css">
         <link rel="stylesheet" href="/css/bootstrap.min.css">
         <link rel="stylesheet" href="/css/bootstrap-responsive.css">
+        <link href='http://fonts.googleapis.com/css?family=Ruge+Boogie' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Princess+Sofia' rel='stylesheet' type='text/css'>
+
+
+        <style type="text/css">
+        	.jumbotron {
+	        	margin: 80px 0;
+	        	text-align: center;
+        	}
+        	.jumbotron h1 {
+/*         		font-family: 'Ruge Boogie' cursive; */
+        		font-family: 'Princess Sofia' cursive;
+	        	font-size: 100px;
+	        	line-height: 1;
+        	}
+        	.jumbotron .lead {
+	        	font-size: 24;
+	        	line-height: 1.25;
+        	}
+       	</style> 
 
     </head>
 
-    <body>	  		
+    <body>	  	
 	    <div class="container">
-			<hr>	            	
+        	<div class="jumbotron">
+        		<h1>Trash Diary</h1>
+        		<br>
+        		<p class="lead">This is a photo diary of all the trash created during an attempt to live a <strong>zero-waste</strong> life style.</p>
+        	</div>
+		<hr>	            	
 			{{{ yield }}}	
+        	
 	    </div>
     </body>
   
