@@ -1,7 +1,7 @@
 var trashModel = require("../models/images.js")
    , format = require('util').format
    , fs = require('fs');; //db model
-
+var moment = require("moment");
 // CHANGE THIS TO YOUR BUCKET NAME
 var myBucket = 'my-trash-images';
 var knox = require('knox');
@@ -13,11 +13,19 @@ var S3Client = knox.createClient({
     , bucket: myBucket
 });
 
+Instagram = require('instagram-node-lib');
+
+Instagram.set('client_id', 'aee1ef05f261441db8c6b92c3d74a1e2');
+Instagram.set('client_secret', '86f15bb5ca394bd28684dd0ea2905e87');
+Instagram.set('redirect_uri', 'http://trash-diary.herokuapp.com');
+
+
+
 exports.index = function(req, res) {
 	console.log("main page requested");
 
 	var filter = {};
-	var fields = 'caption filename'
+	var fields = 'caption filename timestamp'
    //Get images for user
    trashModel.find(filter, fields, function(err, allImages){
    		if (err) {
@@ -26,6 +34,8 @@ exports.index = function(req, res) {
 	   		console.error(err);
    		} else {
 	   		console.log(allImages);
+	   		
+/* 	   		console.log(allImages.timestamp); */
 	   		
        var templateData = {
            s3bucket : S3Client.bucket, // the name of your Bucket
@@ -149,5 +159,79 @@ exports.remove = function(req, res) {
 		console.log("deleting file")
 		res.redirect('/');
 	});
+	
+}
+exports.getInstagram = function(req, res) {
+	
+	console.log("called /instagram");
+	
+	url = Instagram.oauth.authorization_url({
+	  scope: 'comments likes', // use a space when specifying a scope; it will be encoded into a plus
+	  display: 'touch'
+	});	
+
+
+	Instagram.users.search({ 
+/* 		user_id: 321281563, */
+		q: 'nyc_trash',
+		complete: function(data){
+			
+			Instagram.media.info({ username: 'nyc_trash' });	 	
+			console.log(data);
+
+
+
+		res.send(data);
+
+		},
+		error: function(errorMessage, errorObject, caller){
+			console.log("error message: " + errorMessage);
+			console.log("error object: " + errorObject);
+			console.log("caller: " + caller);			
+		}		 
+		
+	});
+/*
+	Instagram.media.info({ 
+		user_id: 321281563,
+		media_id: 3,
+		complete: function(data){
+			console.log(data);
+			res.send(data);	
+		},
+		error: function(errorMessage, errorObject, caller){
+			console.log(errorMessage);
+		}
+		
+	 });
+*/
+	Instagram.users.self();
+	
+	
+}
+exports.oauth = function(req, res){
+	console.log('whats up yo');
+
+	Instagram.oauth.ask_for_access_token({
+    request: request,
+    response: response,
+    redirect: 'http://trash-diary.herokuapp.com',
+
+    complete: function(params, response){
+      // params['access_token']
+      // params['user']
+      response.writeHead(200, {'Content-Type': 'text/plain'});
+      // or some other response ended with
+      response.end();
+    },
+    error: function(errorMessage, errorObject, caller, response){
+      // errorMessage is the raised error message
+      // errorObject is either the object that caused the issue, or the nearest neighbor
+      // caller is the method in which the error occurred
+      response.writeHead(406, {'Content-Type': 'text/plain'});
+      // or some other response ended with
+      response.end();
+    }
+  });
 	
 }

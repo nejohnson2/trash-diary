@@ -90,11 +90,16 @@ app.get('/', routes.index);
 app.get('/upload',routes.uploadForm); //display form
 app.post('/upload',routes.uploadImage); //form POST submits here
 
+app.get('/instagram', routes.getInstagram);
+app.get('/oauth', routes.oauth);
+
 //view individual image details
 app.get('/:filename', routes.detail);
 
 //delete individual file
 app.get('/delete/:filename', routes.remove);
+
+
 
 var port = process.env.PORT || 3000;
 app.listen(port, function() {

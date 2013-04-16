@@ -10,7 +10,8 @@
     "utils" : "latest",
     "hogan-express" : "0.3.3",
     "path" : "latest",
-    "connect-flash": "latest"
+    "connect-flash": "latest",
+    "moment" : "latest"
   },
     "engines": {
     "node": "0.8.x",
