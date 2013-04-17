@@ -5,7 +5,7 @@
     "express": "latest",
     "ejs" : "latest",
     "knox" : "0.5.4",
-    "fs" : "latest",
+/*     "fs" : "latest", */
     "mongoose" : "latest",
     "utils" : "latest",
     "hogan-express" : "0.3.3",
