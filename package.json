@@ -4,14 +4,14 @@
   "dependencies": {
     "express": "latest",
     "ejs" : "latest",
-/*     "knox" : "0.5.4", */
-/*     "fs" : "latest", */
+    "knox" : "0.5.4",
+    "fs" : "latest",
     "mongoose" : "latest",
-/*     "utils" : "latest", */
+    "utils" : "latest",
     "hogan-express" : "0.3.3"
-/*     "path" : "latest", */
-/*     "connect-flash": "latest", */
-/*     "moment" : "latest" */
+    "path" : "latest",
+    "connect-flash": "latest",
+    "moment" : "latest"
   },
     "engines": {
     "node": "0.8.x",
